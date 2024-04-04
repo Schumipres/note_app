@@ -66,42 +66,50 @@ class _TodoListScreenState extends State<TodoListScreen> {
                     return ListView.builder(
                       itemCount: state.todos.length,
                       itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(
-                            state.todos[index].title,
-                            style: TextStyle(
-                              color:
-                                  Theme.of(context).colorScheme.inversePrimary,
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              '/todo_list_detail_screen',
+                              arguments: index,
+                            );
+                          },
+                          child: ListTile(
+                            title: Text(
+                              state.todos[index].title,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.inversePrimary,
+                              ),
                             ),
-                          ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Checkbox(
-                                value: state.todos[index].isDone,
-                                onChanged: (value) {
-                                  context.read<TodoListBloc>().add(
-                                        UpdatedNote(
-                                          index: index,
-                                          isDone: !state.todos[index].isDone,
-                                        ),
-                                      );
-                                },
-                              ),
-                              IconButton(
-                                icon: Icon(
-                                  Icons.delete,
-                                  color: Theme.of(context).colorScheme.primary,
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Checkbox(
+                                  value: state.todos[index].isDone,
+                                  onChanged: (value) {
+                                    context.read<TodoListBloc>().add(
+                                          UpdatedNote(
+                                            index: index,
+                                            isDone: !state.todos[index].isDone,
+                                          ),
+                                        );
+                                  },
                                 ),
-                                onPressed: () {
-                                  context.read<TodoListBloc>().add(
-                                        DeletedNote(
-                                          index: index,
-                                        ),
-                                      );
-                                },
-                              ),
-                            ],
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.delete,
+                                    color: Theme.of(context).colorScheme.primary,
+                                  ),
+                                  onPressed: () {
+                                    context.read<TodoListBloc>().add(
+                                          DeletedNote(
+                                            index: index,
+                                          ),
+                                        );
+                                  },
+                                ),
+                              ],
+                            ),
                           ),
                         );
                       },
