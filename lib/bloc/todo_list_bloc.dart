@@ -50,7 +50,20 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   void _updatedNote(UpdatedNote event, Emitter<TodoListState> emit) {
     emit(TodoListLoading());
     try {
-      newTodos[event.index] = newTodos[event.index].copyWith(isDone: event.isDone);
+      newTodos[event.index] = newTodos[event.index].copyWith(
+        isDone: event.isDone ?? newTodos[event.index].isDone,
+        title: event.title ?? newTodos[event.index].title,
+        description: event.description ?? newTodos[event.index].description,
+      );
+      // print the updated todo
+      print("Updated todo: ${newTodos[event.index]}");
+      
+      // if isDone is true, push it to the top of the list
+      if (event.isDone == true) {
+        final todo = newTodos.removeAt(event.index);
+        newTodos.insert(0, todo);
+      }
+
       emit(TodoListLoaded(todos: newTodos));
     } catch (e) {
       emit(TodoListError(message: e.toString()));
