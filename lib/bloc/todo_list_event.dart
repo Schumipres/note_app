@@ -21,10 +21,14 @@ class DeletedNote extends TodoListEvent {
 
 class UpdatedNote extends TodoListEvent {
   final int index;
-  final bool isDone;
+  final bool? isDone;
+  final String? title;
+  final String? description;
 
   UpdatedNote({
     required this.index,
-    required this.isDone,
+    this.isDone,
+    this.title,
+    this.description,
   });
 }
