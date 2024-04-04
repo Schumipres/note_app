@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app/bloc/todo_list_bloc.dart';
+import 'package:todo_app/presentation/screen/todo_list_detail_screen.dart';
 import 'package:todo_app/presentation/screen/todo_list_screen.dart';
 import 'package:todo_app/theme/dark_mode.dart';
 import 'package:todo_app/theme/light_mode.dart';
@@ -23,8 +24,11 @@ class MyApp extends StatelessWidget {
         theme: lightMode,
         darkTheme: darkMode,
         home: TodoListScreen(),
-        initialRoute: '/',
-        routes: {},
+        initialRoute: '/todo_list_screen',
+        routes: {
+          '/todo_list_screen': (context) => const TodoListScreen(),
+          '/todo_list_detail_screen': (context) => const TodoListDetailScreen(),
+        },
       ),
     );
   }
