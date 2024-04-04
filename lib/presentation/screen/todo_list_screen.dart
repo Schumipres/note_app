@@ -145,14 +145,14 @@ class _TodoListScreenState extends State<TodoListScreen> {
             builder: (BuildContext context) {
               String note = ''; // Add a variable to store the note text
               return AlertDialog(
-                title: const Center(child: Text('Write Note')),
+                title: const Center(child: Text('Write Title')),
                 content: TextField(
                   onChanged: (value) {
                     note =
                         value; // Update the note variable when the text changes
                   },
                   decoration: const InputDecoration(
-                    hintText: 'Enter your note',
+                    hintText: 'Enter your title here...',
                   ),
                 ),
                 actions: [
