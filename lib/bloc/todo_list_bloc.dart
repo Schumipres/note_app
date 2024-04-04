@@ -22,7 +22,7 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
       } else {
         final newTodo = TodoListModel(
           title: event.title,
-          isDone: false,
+          isPinned: false,
         );
 
         newTodos.add(newTodo);
@@ -51,15 +51,15 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
     emit(TodoListLoading());
     try {
       newTodos[event.index] = newTodos[event.index].copyWith(
-        isDone: event.isDone ?? newTodos[event.index].isDone,
+        isPinned: event.isPinned ?? newTodos[event.index].isPinned,
         title: event.title ?? newTodos[event.index].title,
         description: event.description ?? newTodos[event.index].description,
       );
       // print the updated todo
       print("Updated todo: ${newTodos[event.index]}");
-      
-      // if isDone is true, push it to the top of the list
-      if (event.isDone == true) {
+
+      // if isPinned is true, push it to the top of the list
+      if (event.isPinned == true) {
         final todo = newTodos.removeAt(event.index);
         newTodos.insert(0, todo);
       }

@@ -78,19 +78,29 @@ class _TodoListScreenState extends State<TodoListScreen> {
                             title: Text(
                               state.todos[index].title,
                               style: TextStyle(
-                                color: Theme.of(context).colorScheme.inversePrimary,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .inversePrimary,
                               ),
                             ),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Checkbox(
-                                  value: state.todos[index].isDone,
-                                  onChanged: (value) {
+                                IconButton(
+                                  icon: Icon(
+                                    state.todos[index].isPinned
+                                        ? Icons.push_pin
+                                        : Icons.push_pin_outlined,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .inversePrimary,
+                                  ),
+                                  onPressed: () {
                                     context.read<TodoListBloc>().add(
                                           UpdatedNote(
                                             index: index,
-                                            isDone: !state.todos[index].isDone,
+                                            isPinned:
+                                                !state.todos[index].isPinned,
                                           ),
                                         );
                                   },
@@ -98,7 +108,8 @@ class _TodoListScreenState extends State<TodoListScreen> {
                                 IconButton(
                                   icon: Icon(
                                     Icons.delete,
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                   ),
                                   onPressed: () {
                                     context.read<TodoListBloc>().add(
@@ -134,13 +145,13 @@ class _TodoListScreenState extends State<TodoListScreen> {
             builder: (BuildContext context) {
               String note = ''; // Add a variable to store the note text
               return AlertDialog(
-                title: Center(child: Text('Write Note')),
+                title: const Center(child: Text('Write Note')),
                 content: TextField(
                   onChanged: (value) {
                     note =
                         value; // Update the note variable when the text changes
                   },
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Enter your note',
                   ),
                 ),
@@ -148,8 +159,6 @@ class _TodoListScreenState extends State<TodoListScreen> {
                   TextButton(
                     onPressed: () {
                       // Handle send button action here
-                      print(
-                          'Note: $note'); // Print the note for testing purposes
                       context.read<TodoListBloc>().add(
                           CreatedNote(title: note)); // Add the note to the list
                       Navigator.of(context).pop(); // Close the dialog
