@@ -133,45 +133,40 @@ class _TodoListScreenState extends State<TodoListScreen> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        child: Icon(
-          Icons.add,
-          color: Theme.of(context).colorScheme.inversePrimary,
-        ),
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              String note = ''; // Add a variable to store the note text
-              return AlertDialog(
-                title: const Center(child: Text('Write Title')),
-                content: TextField(
-                  onChanged: (value) {
-                    note =
-                        value; // Update the note variable when the text changes
-                  },
-                  decoration: const InputDecoration(
-                    hintText: 'Enter your title here...',
-                  ),
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      // Handle send button action here
-                      context.read<TodoListBloc>().add(
-                          CreatedNote(title: note)); // Add the note to the list
-                      Navigator.of(context).pop(); // Close the dialog
-                    },
-                    child: Text('Send',
-                        style: TextStyle(
-                            color:
-                                Theme.of(context).colorScheme.inversePrimary)),
-                  ),
-                ],
-              );
-            },
-          );
+      floatingActionButton: BlocBuilder<TodoListBloc, TodoListState>(
+        builder: (context, state) {
+          print("State: $state");
+          //print what in the state
+          if (state is TodoListLoaded) {
+            return FloatingActionButton(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              child: Icon(
+                Icons.add,
+                color: Theme.of(context).colorScheme.inversePrimary,
+              ),
+              onPressed: () {
+                context.read<TodoListBloc>().add(
+                    CreatedNote(title: "New note")); // Add the note to the list
+                Navigator.pushNamed(context, '/todo_list_detail_screen',
+                    arguments: state.todos.length - 1);
+              },
+            );
+          } else if (state is TodoListInitial) {
+            return FloatingActionButton(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              child: Icon(
+                Icons.add,
+                color: Theme.of(context).colorScheme.inversePrimary,
+              ),
+              onPressed: () {
+                context.read<TodoListBloc>().add(
+                    CreatedNote(title: "New note")); // Add the note to the list
+                Navigator.pushNamed(context, '/todo_list_detail_screen',
+                    arguments: 0);
+              },
+            );
+          }
+          return Container();
         },
       ),
     );
