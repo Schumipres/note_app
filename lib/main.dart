@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo_app/app_bloc_observer.dart';
 import 'package:todo_app/bloc/todo_list_bloc.dart';
 import 'package:todo_app/presentation/screen/todo_list_detail_screen.dart';
 import 'package:todo_app/presentation/screen/todo_list_screen.dart';
@@ -7,6 +8,7 @@ import 'package:todo_app/theme/dark_mode.dart';
 import 'package:todo_app/theme/light_mode.dart';
 
 void main() {
+  Bloc.observer = AppBlocObeserver();
   runApp(const MyApp());
 }
 
