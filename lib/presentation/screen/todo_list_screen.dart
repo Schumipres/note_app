@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app/bloc/todo_list_bloc.dart';
+import 'package:todo_app/models/todo_list_model.dart';
 
 class TodoListScreen extends StatefulWidget {
   const TodoListScreen({super.key});
@@ -13,125 +15,125 @@ class _TodoListScreenState extends State<TodoListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 120, bottom: 20),
-              child: Center(
-                child: Text(
-                  'Note',
-                  style: TextStyle(
-                    fontSize: 60,
-                    fontWeight: FontWeight.normal,
-                    color: Theme.of(context).colorScheme.inversePrimary,
-                  ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 120, bottom: 20),
+            child: Center(
+              child: Text(
+                'Note',
+                style: TextStyle(
+                  fontSize: 60,
+                  fontWeight: FontWeight.normal,
+                  color: Theme.of(context).colorScheme.inversePrimary,
                 ),
               ),
             ),
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.only(right: 20, left: 20),
-              child: Container(
-                height: 1,
-                color: Theme.of(context).colorScheme.primary,
-              ),
+          ),
+          const SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.only(right: 20, left: 20),
+            child: Container(
+              height: 1,
+              color: Theme.of(context).colorScheme.primary,
             ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height - 200,
-              child: BlocConsumer<TodoListBloc, TodoListState>(
-                listener: (context, state) {
-                  if (state is TodoListError) {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text(state.message),
-                    ));
-                  }
-                },
-                builder: (context, state) {
-                  if (state is TodoListInitial) {
-                    return Center(
-                      child: Text(
-                        'No notes yet...',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.inversePrimary,
-                        ),
+          ),
+          Expanded(
+            child: BlocConsumer<TodoListBloc, TodoListState>(
+              listener: (context, state) {
+                if (state is TodoListError) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(state.message),
+                  ));
+                }
+              },
+              builder: (context, state) {
+                if (state is TodoListInitial) {
+                  // call the bloc to fetch the todos
+                  // context.read<TodoListBloc>().add(FetchInitialTodos());
+                  
+                  return Center(
+                    child: Text(
+                      'No notes yet...',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.inversePrimary,
                       ),
-                    );
-                  } else if (state is TodoListLoading) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  } else if (state is TodoListLoaded) {
-                    return ListView.builder(
-                      itemCount: state.todos.length,
-                      itemBuilder: (context, index) {
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              '/todo_list_detail_screen',
-                              arguments: index,
-                            );
-                          },
-                          child: ListTile(
-                            title: Text(
-                              state.todos[index].title,
-                              style: TextStyle(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .inversePrimary,
-                              ),
+                    ),
+                  );
+                } else if (state is TodoListLoading) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (state is TodoListLoaded) {
+                  return ListView.builder(
+                    itemCount: state.todos.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () {
+                          context.read<TodoListBloc>().add(
+                            ClickedNote(
+                              id: state.todos[index].id!,
                             ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: Icon(
-                                    state.todos[index].isPinned
-                                        ? Icons.push_pin
-                                        : Icons.push_pin_outlined,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .inversePrimary,
-                                  ),
-                                  onPressed: () {
-                                    context.read<TodoListBloc>().add(
-                                          UpdatedNote(
-                                            index: index,
-                                            isPinned:
-                                                !state.todos[index].isPinned,
-                                          ),
-                                        );
-                                  },
-                                ),
-                                IconButton(
-                                  icon: Icon(
-                                    Icons.delete,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                  ),
-                                  onPressed: () {
-                                    context.read<TodoListBloc>().add(
-                                          DeletedNote(
-                                            index: index,
-                                          ),
-                                        );
-                                  },
-                                ),
-                              ],
+                          );
+                          Navigator.pushNamed(
+                            context,
+                            '/todo_list_detail_screen',
+                          );
+                        },
+                        child: ListTile(
+                          title: Text(
+                            state.todos[index].title,
+                            style: TextStyle(
+                              color:
+                                  Theme.of(context).colorScheme.inversePrimary,
                             ),
                           ),
-                        );
-                      },
-                    );
-                  }
-                  return Container();
-                },
-              ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: Icon(
+                                  state.todos[index].isPinned == 0
+                                      ? Icons.push_pin
+                                      : Icons.push_pin_outlined,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .inversePrimary,
+                                ),
+                                onPressed: () {
+                                  context.read<TodoListBloc>().add(
+                                        ClickedPin(
+                                          id: state.todos[index].id!,
+                                        ),
+                                      );
+                                },
+                              ),
+                              IconButton(
+                                icon: Icon(
+                                  Icons.delete,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                                onPressed: () {
+                                  context.read<TodoListBloc>().add(
+                                        DeletedNote(
+                                          index: state.todos[index].id!,
+                                        ),
+                                      );
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }
+                return Container();
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
       floatingActionButton: BlocBuilder<TodoListBloc, TodoListState>(
         builder: (context, state) {
@@ -147,8 +149,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
               onPressed: () {
                 context.read<TodoListBloc>().add(
                     CreatedNote(title: "New note")); // Add the note to the list
-                Navigator.pushNamed(context, '/todo_list_detail_screen',
-                    arguments: state.todos.length - 1);
+                Navigator.pushNamed(context, '/todo_list_detail_screen');
               },
             );
           } else if (state is TodoListInitial) {
@@ -161,8 +162,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
               onPressed: () {
                 context.read<TodoListBloc>().add(
                     CreatedNote(title: "New note")); // Add the note to the list
-                Navigator.pushNamed(context, '/todo_list_detail_screen',
-                    arguments: 0);
+                Navigator.pushNamed(context, '/todo_list_detail_screen');
               },
             );
           }

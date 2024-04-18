@@ -1,70 +1,125 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:todo_app/data/repository/todo_repository.dart';
 import 'package:todo_app/models/todo_list_model.dart';
 
 part 'todo_list_event.dart';
 part 'todo_list_state.dart';
 
 class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
-  final List<TodoListModel> newTodos = [];
+  final List<TodoModel> todosList = [];
+  final TodoRepository todoRepository;
 
-  TodoListBloc() : super(TodoListInitial()) {
+  TodoListBloc(this.todoRepository) : super(TodoListInitial()) {
     on<CreatedNote>(_createdNote);
     on<DeletedNote>(_deletedNote);
     on<UpdatedNote>(_updatedNote);
+    on<FetchInitialTodos>(_initialFetchTodos);
+    on<ClickedNote>(_clickedNote);
+    on<ClickedPin>(_clickedPin);
   }
 
-  void _createdNote(CreatedNote event, Emitter<TodoListState> emit) {
+  void _initialFetchTodos(
+      FetchInitialTodos event, Emitter<TodoListState> emit) async {
+    print("JE PASSE ICI");
+    emit(TodoListLoading());
+    try {
+      final todos = await todoRepository.todos();
+      emit(TodoListLoaded(todos: todos));
+    } catch (e) {
+      emit(TodoListError(message: e.toString()));
+    }
+  }
+
+  void _createdNote(CreatedNote event, Emitter<TodoListState> emit) async {
     emit(TodoListLoading());
     try {
       if (event.title.isEmpty) {
         emit(TodoListError(message: 'Title is empty'));
       } else {
-        final newTodo = TodoListModel(
+        final newTodo = await todoRepository.add(TodoModel(
           title: event.title,
-          isPinned: false,
-        );
-
-        newTodos.add(newTodo);
+          description: 'test',
+          isPinned: 0,
+        ));
+        emit(NavigateToDetailedScreen(todo: newTodo));
       }
-      emit(TodoListLoaded(todos: newTodos));
     } catch (e) {
       emit(TodoListError(message: e.toString()));
     }
   }
 
-  void _deletedNote(DeletedNote event, Emitter<TodoListState> emit) {
+  void _deletedNote(DeletedNote event, Emitter<TodoListState> emit) async {
     emit(TodoListLoading());
     try {
-      newTodos.removeAt(event.index);
-      if (newTodos.isEmpty) {
+      await todoRepository.delete(event.index);
+
+      final todos = await todoRepository.todos();
+      //if todos is empty, emit TodoListInitial
+      if (todos.isEmpty) {
         emit(TodoListInitial());
         return;
       }
-      emit(TodoListLoaded(todos: newTodos));
+      // Emit the updated todos
+      emit(TodoListLoaded(todos: todos));
     } catch (e) {
       emit(TodoListError(message: e.toString()));
     }
   }
 
-  void _updatedNote(UpdatedNote event, Emitter<TodoListState> emit) {
+  void _updatedNote(UpdatedNote event, Emitter<TodoListState> emit) async {
     emit(TodoListLoading());
     try {
-      newTodos[event.index] = newTodos[event.index].copyWith(
-        isPinned: event.isPinned ?? newTodos[event.index].isPinned,
-        title: event.title ?? newTodos[event.index].title,
-        description: event.description ?? newTodos[event.index].description,
+      print("Update try");
+      final updateTodo = await todoRepository.update(
+        TodoModel(
+          id: event.index,
+          title: event.title ?? '',
+          description: event.description,
+          isPinned: event.isPinned ?? 0,
+        ),
       );
-      // print the updated todo
-      print("Updated todo: ${newTodos[event.index]}");
-
-      // if isPinned is true, push it to the top of the list
-      if (event.isPinned == true) {
-        final todo = newTodos.removeAt(event.index);
-        newTodos.insert(0, todo);
+      if (event.noteIsClosed == true) {
+        print("NOOOOOOOOOOOOOOOTE IS CLOSED");
+        final todos = await todoRepository.todos();
+        emit(TodoListLoaded(todos: todos));
+        return;
       }
+      emit(NavigateToDetailedScreen(todo: updateTodo));
+    } catch (e) {
+      print("Update catch: $e");
+      emit(TodoListError(message: e.toString()));
+    }
+  }
 
-      emit(TodoListLoaded(todos: newTodos));
+  void _clickedNote(ClickedNote event, Emitter<TodoListState> emit) async {
+    emit(TodoListLoading());
+    try {
+      final todo = await todoRepository.todoById(event.id);
+      emit(NavigateToDetailedScreen(todo: todo));
+    } catch (e) {
+      emit(TodoListError(message: e.toString()));
+    }
+  }
+
+  void _clickedPin(ClickedPin event, Emitter<TodoListState> emit) async {
+    emit(TodoListLoading());
+    try {
+      // update the isPinned value of the given todo id by reversing the current value
+      final todo = await todoRepository.todoById(event.id);
+      await todoRepository.update(
+        TodoModel(
+          id: event.id,
+          title: todo.title,
+          description: todo.description,
+          isPinned: todo.isPinned == 0 ? 1 : 0,
+        ),
+      );
+      // Fetch the updated todos
+      final todos = await todoRepository.todos();
+      // place the pinned todo at the end of the list
+      todos.sort((a, b) => a.isPinned.compareTo(b.isPinned));
+      emit(TodoListLoaded(todos: todos));
     } catch (e) {
       emit(TodoListError(message: e.toString()));
     }
