@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:todo_app/data/providers/todo_db.dart';
-import 'package:todo_app/models/todo_list_model.dart';
+import 'package:note_app/data/providers/note_db.dart';
+import 'package:note_app/models/note_list_model.dart';
 
 class TodoRepository {
   final TodoProvider todoProvider;

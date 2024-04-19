@@ -1,11 +1,11 @@
-part of 'todo_list_bloc.dart';
+part of 'note_list_bloc.dart';
 
 @immutable
-sealed class TodoListEvent {}
+sealed class NoteListEvent {}
 
-class FetchInitialTodos extends TodoListEvent {}
+class FetchInitialTodos extends NoteListEvent {}
 
-class CreatedNote extends TodoListEvent {
+class CreatedNote extends NoteListEvent {
   final String title;
 
   CreatedNote({
@@ -13,7 +13,7 @@ class CreatedNote extends TodoListEvent {
   });
 }
 
-class DeletedNote extends TodoListEvent {
+class DeletedNote extends NoteListEvent {
   final int index;
 
   DeletedNote({
@@ -21,7 +21,7 @@ class DeletedNote extends TodoListEvent {
   });
 }
 
-class UpdatedNote extends TodoListEvent {
+class UpdatedNote extends NoteListEvent {
   //TODO change to use model
   final int index;
   final int? isPinned;
@@ -39,7 +39,7 @@ class UpdatedNote extends TodoListEvent {
 }
 
 // event clicked on a note from the list
-class ClickedNote extends TodoListEvent {
+class ClickedNote extends NoteListEvent {
   final int id;
 
   ClickedNote({
@@ -48,7 +48,7 @@ class ClickedNote extends TodoListEvent {
 }
 
 // event clicked on Pin button from the list
-class ClickedPin extends TodoListEvent {
+class ClickedPin extends NoteListEvent {
   final int id;
 
   ClickedPin({

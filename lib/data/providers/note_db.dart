@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:todo_app/models/todo_list_model.dart';
+import 'package:note_app/models/note_list_model.dart';
 
 // Database provider class
 class TodoProvider {
@@ -109,10 +109,10 @@ class TodoProvider {
     final List<Map<String, dynamic>> todos = await _database!.query(_tableName);
 
     // Map each Map<String, dynamic> to a TodoModel object
-    final List<TodoModel> todoList =
+    final List<TodoModel> noteList =
         todos.map((todo) => TodoModel.fromMap(todo)).toList();
 
-    return todoList;
+    return noteList;
   }
 
   //Get last todo

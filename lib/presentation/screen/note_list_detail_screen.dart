@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todo_app/bloc/todo_list_bloc.dart';
+import 'package:note_app/bloc/note_list_bloc.dart';
 import 'dart:async';
 
-class TodoListDetailScreen extends StatefulWidget {
-  const TodoListDetailScreen({super.key});
+class NoteListDetailScreen extends StatefulWidget {
+  const NoteListDetailScreen({super.key});
 
   @override
-  State<TodoListDetailScreen> createState() => _TodoListDetailScreenState();
+  State<NoteListDetailScreen> createState() => _NoteListDetailScreenState();
 }
 
-class _TodoListDetailScreenState extends State<TodoListDetailScreen> {
+class _NoteListDetailScreenState extends State<NoteListDetailScreen> {
   // Timer
   Timer? timer;
 
@@ -29,7 +29,7 @@ class _TodoListDetailScreenState extends State<TodoListDetailScreen> {
 
     //if value and index are not null, then start the timer
     if (noteIsClosed == true) {
-      context.read<TodoListBloc>().add(
+      context.read<NoteListBloc>().add(
             UpdatedNote(
               title: title,
               index: index,
@@ -41,7 +41,7 @@ class _TodoListDetailScreenState extends State<TodoListDetailScreen> {
       timer = Timer(const Duration(seconds: 1), () {
         print('Auto-saving... $value, $index');
         // Auto-save after 2 seconds of inactivity
-        context.read<TodoListBloc>().add(
+        context.read<NoteListBloc>().add(
               UpdatedNote(
                 title: title,
                 index: index,
@@ -54,9 +54,9 @@ class _TodoListDetailScreenState extends State<TodoListDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TodoListBloc, TodoListState>(
+    return BlocBuilder<NoteListBloc, NoteListState>(
       builder: (context, state) {
-        if (state is TodoListLoading) {
+        if (state is NoteListLoading) {
           return const Center(
             child: CircularProgressIndicator(),
           );
@@ -88,12 +88,11 @@ class _TodoListDetailScreenState extends State<TodoListDetailScreen> {
                         actions: [
                           TextButton(
                             onPressed: () {
-                              context.read<TodoListBloc>().add(
+                              context.read<NoteListBloc>().add(
                                     UpdatedNote(
                                       index: state.todo.id!,
                                       title: editedTitle,
                                       description: state.todo.description,
-
                                     ),
                                   );
                               Navigator.of(context).pop();
@@ -121,8 +120,9 @@ class _TodoListDetailScreenState extends State<TodoListDetailScreen> {
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back_ios),
                 onPressed: () {
-                  resetTimer(state.todo.description!, state.todo.id!,
-                      state.todo.title, noteIsClosed: true);
+                  resetTimer(
+                      state.todo.description!, state.todo.id!, state.todo.title,
+                      noteIsClosed: true);
                   Navigator.pop(context);
                 },
               ),
