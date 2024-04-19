@@ -16,6 +16,11 @@ This Flutter app serves as a learning project for implementing a note-taking app
 - **Bloc Architecture**: The app's state management is implemented using the Bloc architecture, separating the UI from business logic and state management.
 - **SQLite**: Local data storage is implemented using SQLite, enabling efficient data management and retrieval for note storage.
 
+## Mockups
+
+![Mockup 1](/assets/1.svg)
+![Mockup 2](/assets/2.svg)
+
 ## Key Learnings
 
 Through the development of this app, key learnings include:
