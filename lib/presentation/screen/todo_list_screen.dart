@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app/bloc/todo_list_bloc.dart';
-import 'package:todo_app/models/todo_list_model.dart';
 
 class TodoListScreen extends StatefulWidget {
   const TodoListScreen({super.key});
@@ -50,9 +49,11 @@ class _TodoListScreenState extends State<TodoListScreen> {
               },
               builder: (context, state) {
                 if (state is TodoListInitial) {
-                  // call the bloc to fetch the todos
-                  // context.read<TodoListBloc>().add(FetchInitialTodos());
-                  
+                  context.read<TodoListBloc>().add(
+                        FetchInitialTodos(),
+                      );
+                  return const Scaffold();
+                } else if (state is TodoListEmpty) {
                   return Center(
                     child: Text(
                       'No notes yet...',
@@ -72,10 +73,10 @@ class _TodoListScreenState extends State<TodoListScreen> {
                       return GestureDetector(
                         onTap: () {
                           context.read<TodoListBloc>().add(
-                            ClickedNote(
-                              id: state.todos[index].id!,
-                            ),
-                          );
+                                ClickedNote(
+                                  id: state.todos[index].id!,
+                                ),
+                              );
                           Navigator.pushNamed(
                             context,
                             '/todo_list_detail_screen',
@@ -94,7 +95,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
                             children: [
                               IconButton(
                                 icon: Icon(
-                                  state.todos[index].isPinned == 0
+                                  state.todos[index].isPinned == 1
                                       ? Icons.push_pin
                                       : Icons.push_pin_outlined,
                                   color: Theme.of(context)
@@ -152,7 +153,7 @@ class _TodoListScreenState extends State<TodoListScreen> {
                 Navigator.pushNamed(context, '/todo_list_detail_screen');
               },
             );
-          } else if (state is TodoListInitial) {
+          } else if (state is TodoListInitial || state is TodoListEmpty) {
             return FloatingActionButton(
               backgroundColor: Theme.of(context).colorScheme.primary,
               child: Icon(

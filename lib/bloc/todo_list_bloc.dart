@@ -14,17 +14,20 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
     on<CreatedNote>(_createdNote);
     on<DeletedNote>(_deletedNote);
     on<UpdatedNote>(_updatedNote);
-    on<FetchInitialTodos>(_initialFetchTodos);
     on<ClickedNote>(_clickedNote);
     on<ClickedPin>(_clickedPin);
+    on<FetchInitialTodos>(_initialFetchTodos);
   }
 
   void _initialFetchTodos(
       FetchInitialTodos event, Emitter<TodoListState> emit) async {
-    print("JE PASSE ICI");
     emit(TodoListLoading());
     try {
       final todos = await todoRepository.todos();
+      if (todos.isEmpty) {
+        emit(TodoListEmpty());
+        return;
+      }
       emit(TodoListLoaded(todos: todos));
     } catch (e) {
       emit(TodoListError(message: e.toString()));
@@ -34,16 +37,16 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   void _createdNote(CreatedNote event, Emitter<TodoListState> emit) async {
     emit(TodoListLoading());
     try {
-      if (event.title.isEmpty) {
-        emit(TodoListError(message: 'Title is empty'));
-      } else {
-        final newTodo = await todoRepository.add(TodoModel(
-          title: event.title,
-          description: 'test',
-          isPinned: 0,
-        ));
-        emit(NavigateToDetailedScreen(todo: newTodo));
-      }
+      // if (event.title.isEmpty) {
+      //   emit(TodoListError(message: 'Title is empty'));
+      // } else {
+      final newTodo = await todoRepository.add(TodoModel(
+        title: event.title,
+        description: 'test',
+        isPinned: 0,
+      ));
+      emit(NavigateToDetailedScreen(todo: newTodo));
+      // }
     } catch (e) {
       emit(TodoListError(message: e.toString()));
     }
@@ -70,7 +73,6 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
   void _updatedNote(UpdatedNote event, Emitter<TodoListState> emit) async {
     emit(TodoListLoading());
     try {
-      print("Update try");
       final updateTodo = await todoRepository.update(
         TodoModel(
           id: event.index,
@@ -79,15 +81,14 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
           isPinned: event.isPinned ?? 0,
         ),
       );
+      // to close the note
       if (event.noteIsClosed == true) {
-        print("NOOOOOOOOOOOOOOOTE IS CLOSED");
         final todos = await todoRepository.todos();
         emit(TodoListLoaded(todos: todos));
         return;
       }
       emit(NavigateToDetailedScreen(todo: updateTodo));
     } catch (e) {
-      print("Update catch: $e");
       emit(TodoListError(message: e.toString()));
     }
   }
@@ -117,8 +118,6 @@ class TodoListBloc extends Bloc<TodoListEvent, TodoListState> {
       );
       // Fetch the updated todos
       final todos = await todoRepository.todos();
-      // place the pinned todo at the end of the list
-      todos.sort((a, b) => a.isPinned.compareTo(b.isPinned));
       emit(TodoListLoaded(todos: todos));
     } catch (e) {
       emit(TodoListError(message: e.toString()));

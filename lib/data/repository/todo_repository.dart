@@ -11,11 +11,10 @@ class TodoRepository {
   Future<List<TodoModel>> todos() async {
     try {
       final List<TodoModel> todos = await todoProvider.todos();
-      print("todos: $todos");
+      todos.sort((a, b) => b.isPinned.compareTo(a.isPinned));
 
       return todos;
     } catch (e) {
-      print("Error: $e");
       rethrow;
     }
   }
@@ -28,7 +27,6 @@ class TodoRepository {
       // Return the added todo by fetching it from the database
       return await todoProvider.lastTodo();
     } catch (e) {
-      print("Error: $e");
       rethrow;
     }
   }
@@ -50,7 +48,6 @@ class TodoRepository {
     try {
       await todoProvider.delete(id);
     } catch (e) {
-      print("EEEEEEEEEEEERRREUR: $e");
       rethrow;
     }
   }

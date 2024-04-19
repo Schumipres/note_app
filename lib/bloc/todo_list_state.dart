@@ -5,6 +5,8 @@ sealed class TodoListState {}
 
 final class TodoListInitial extends TodoListState {}
 
+final class TodoListEmpty extends TodoListState {}
+
 final class TodoListLoading extends TodoListState {}
 
 final class TodoListError extends TodoListState {

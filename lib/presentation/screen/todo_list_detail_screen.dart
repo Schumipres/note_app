@@ -3,8 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app/bloc/todo_list_bloc.dart';
 import 'dart:async';
 
-import 'package:todo_app/models/todo_list_model.dart';
-
 class TodoListDetailScreen extends StatefulWidget {
   const TodoListDetailScreen({super.key});
 
@@ -94,6 +92,8 @@ class _TodoListDetailScreenState extends State<TodoListDetailScreen> {
                                     UpdatedNote(
                                       index: state.todo.id!,
                                       title: editedTitle,
+                                      description: state.todo.description,
+
                                     ),
                                   );
                               Navigator.of(context).pop();

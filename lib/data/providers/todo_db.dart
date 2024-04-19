@@ -60,7 +60,6 @@ class TodoProvider {
 
   // Insert a todo
   Future<void> insert(TodoModel todo) async {
-    print("HERE IS THE TODO: $todo");
     try {
       //remove all the todos
       // await _database!.delete(_tableName);
@@ -70,7 +69,7 @@ class TodoProvider {
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
     } catch (e) {
-      print("ERROR: $e");
+      rethrow;
     }
   }
 
