@@ -63,6 +63,7 @@ class _NoteListDetailScreenState extends State<NoteListDetailScreen> {
         } else if (state is NavigateToDetailedScreen) {
           return Scaffold(
             appBar: AppBar(
+              backgroundColor: Theme.of(context).colorScheme.primary,
               title: GestureDetector(
                 onTap: () {
                   // Handle the tap event to make the title editable

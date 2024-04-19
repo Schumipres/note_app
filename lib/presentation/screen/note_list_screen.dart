@@ -113,7 +113,9 @@ class _NoteListScreenState extends State<NoteListScreen> {
                               IconButton(
                                 icon: Icon(
                                   Icons.delete,
-                                  color: Theme.of(context).colorScheme.primary,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .inversePrimary,
                                 ),
                                 onPressed: () {
                                   context.read<NoteListBloc>().add(
